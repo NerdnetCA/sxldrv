@@ -70,7 +70,7 @@
 
 #define SXL_REPORT_BUFFER_SIZE   50
 
-#define TRIGGER_THRESH          1300
+#define TRIGGER_THRESH          1900
 
 
 struct sxl_state {

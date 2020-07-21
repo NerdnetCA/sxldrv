@@ -28,19 +28,28 @@
 #include <linux/uinput.h>
 #include <linux/hidraw.h>
 
+#include "hidapi.h"
 #include "mytools.h"
 #include "stratusxl.h"
 
+#define MAX_STR 256
+
+int dump_desc(int fd);
+int evdev_run(int fd);
 
 int main(int argc, char *argv[])
 {
     int c;
     int flag_d = 0;
+    int flag_tf = 0;
     char *value_h = NULL;
     int dfd = 0;
     
-    while ((c=getopt(argc,argv, "dh:")) != -1) {
+    while ((c=getopt(argc,argv, "dh:t")) != -1) {
         switch(c) {
+            case 't':
+                flag_tf = 1;
+                break;
             case 'd':
                 flag_d = 1;
                 break;
@@ -52,19 +61,38 @@ int main(int argc, char *argv[])
                 break;
         }
     }
-    
-    if(!value_h) {
-        // Must specify hidraw node
-        fprintf(stderr,"HIDRAW device must be specified.\n");
+
+    if(flag_tf) {
+        int res;
+        hid_device *handle;
+        wchar_t wstr[MAX_STR];
+        
+        res = hid_init();
+        handle = hid_open(0x0111,0x1419,NULL);
+        res = hid_get_manufacturer_string(handle, wstr, MAX_STR);
+        wprintf(L"Manufacturer String: %s\n", wstr);
+        res = hid_get_product_string(handle, wstr, MAX_STR);
+        wprintf(L"Product String: %s\n",wstr);
+        
+        exit(0);
     }
     
-    dfd = open(value_h, O_RDWR|O_EXCL);
+    if(!value_h) {
+        int res;
+        hid_device *handle;
+        handle = hid_open(0x0111,0x1419,NULL);
+        dfd = hid_get_fd(handle);
+    } else {
+        dfd = open(value_h, O_RDWR|O_EXCL);
+    }
+    
+    
     if(!(dfd>0)) {
         fprintf(stderr,"Failed to open device %s",value_h);
         return 1;
     }
     
-    if(flag_d) {        
+    if(flag_d) {
         dump_desc(dfd);
         printf("\n\n");
     }

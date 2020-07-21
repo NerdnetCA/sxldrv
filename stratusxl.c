@@ -52,8 +52,11 @@ int sxl_update(SXL_STATE* sxl, u_int8_t* buffer, int evfd)
     }
 
     // hamfisted implementation of trigger deadzones.
-    newsxl.axis_rt = newsxl.axis_rt > TRIGGER_THRESH ? newsxl.axis_rt : 0;
-    newsxl.axis_lt = newsxl.axis_lt > TRIGGER_THRESH ? newsxl.axis_lt : 0;
+    //newsxl.axis_rt = newsxl.axis_rt > TRIGGER_THRESH ? newsxl.axis_rt : 0;
+    //newsxl.axis_lt = newsxl.axis_lt > TRIGGER_THRESH ? newsxl.axis_lt : 0;
+    newsxl.axis_rt = (newsxl.axis_rt - 2048)*2;
+    newsxl.axis_lt = (newsxl.axis_lt - 2048)*2;
+
     
     // Check for changed values in the sxl struct, and
     // send an event for each change.
