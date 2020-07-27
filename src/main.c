@@ -81,6 +81,8 @@ int main(int argc, char *argv[])
         int res;
         hid_device *handle;
         handle = hid_open(0x0111,0x1419,NULL);
+        if(!handle) { printf("Unable to open controller\n");
+        }
         dfd = hid_get_fd(handle);
     } else {
         dfd = open(value_h, O_RDWR|O_EXCL);
